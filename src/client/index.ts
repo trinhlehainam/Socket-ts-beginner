@@ -1,4 +1,5 @@
-import {Client} from './client'
+import {App} from './app'
 
-const URL = 'http://localhost:3000';
-new Client(URL).init();
+() => {
+    new App().run();
+}
