@@ -1,4 +1,4 @@
-import {io} from 'socket.io-client'
+import {Client} from './client'
 
-const client = io('http://localhost:3000');
-client.emit('Hello world');
+const URL = 'http://localhost:3000';
+new Client(URL).init();

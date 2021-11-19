@@ -36,9 +36,20 @@ class App {
         this.server = http.createServer(app);
         this.port = port;
         this.io = new socket_io_1.Server(this.server);
+    }
+    init() {
         this.io.on('connection', (socket) => {
             console.log(`Player ${socket.id} is connected.`);
+            socket.emit('message', `Hello ${socket.id}`);
+            socket.broadcast.emit('message', `Say hello to ${socket.id}`);
+            socket.on('disconnect', () => {
+                console.log('socket disconected :' + socket.id);
+            });
         });
+        setInterval(() => {
+            this.io.emit('random', Math.floor(Math.random() * 10));
+        }, 1000);
+        return this;
     }
     start() {
         this.server.listen(this.port, () => {
@@ -46,5 +57,5 @@ class App {
         });
     }
 }
-new App(PORT).start();
+new App(PORT).init().start();
 //# sourceMappingURL=index.js.map

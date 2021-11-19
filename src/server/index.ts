@@ -24,7 +24,19 @@ class App {
     init(): App {
         this.io.on('connection', (socket) => {
             console.log(`Player ${socket.id} is connected.`); 
+
+            socket.emit('message', `Hello ${socket.id}`);
+
+            socket.broadcast.emit('message', `Say hello to ${socket.id}`);
+
+            socket.on('disconnect', () => {
+                console.log('socket disconected :' + socket.id);
+            })
         })
+
+        setInterval(() => {
+            this.io.emit('random', Math.floor(Math.random() * 10))
+        }, 1000);
 
         return this;
     }
@@ -37,5 +49,3 @@ class App {
 }
 
 new App(PORT).init().start();
-
-
