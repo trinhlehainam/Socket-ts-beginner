@@ -21,6 +21,14 @@ class App {
         this.io = new Server(this.server);
     }
 
+    init(): App {
+        this.io.on('connection', (socket) => {
+            console.log(`Player ${socket.id} is connected.`); 
+        })
+
+        return this;
+    }
+
     start() {
         this.server.listen(this.port, () => {
             console.log(`Listenning on ${this.port}`);
@@ -28,6 +36,6 @@ class App {
     }
 }
 
-new App(PORT).start();
+new App(PORT).init().start();
 
 

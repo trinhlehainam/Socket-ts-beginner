@@ -28,14 +28,17 @@ const http = __importStar(require("http"));
 const socket_io_1 = require("socket.io");
 const PORT = 3000;
 class App {
-    constructor() {
+    constructor(port) {
         const app = (0, express_1.default)();
         app.use(express_1.default.json());
         app.use(express_1.default.urlencoded({ extended: true }));
         app.use(express_1.default.static(path_1.default.resolve(__dirname, '../client/')));
         this.server = http.createServer(app);
-        this.port = PORT;
+        this.port = port;
         this.io = new socket_io_1.Server(this.server);
+        this.io.on('connection', (socket) => {
+            console.log(`Player ${socket.id} is connected.`);
+        });
     }
     start() {
         this.server.listen(this.port, () => {
@@ -43,5 +46,5 @@ class App {
         });
     }
 }
-new App().start();
-//# sourceMappingURL=server.js.map
+new App(PORT).start();
+//# sourceMappingURL=index.js.map
