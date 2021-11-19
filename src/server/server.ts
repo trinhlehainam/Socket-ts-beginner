@@ -10,14 +10,14 @@ class App {
     private server: http.Server
     private port: number
     private io: Server
-    constructor() {
+    constructor(port: number) {
         const app = express();
         app.use(express.json());
         app.use(express.urlencoded({extended: true}));
         app.use(express.static(path.resolve(__dirname, '../client/')));
 
         this.server = http.createServer(app);
-        this.port = PORT;
+        this.port = port;
         this.io = new Server(this.server);
     }
 
@@ -28,6 +28,6 @@ class App {
     }
 }
 
-new App().start();
+new App(PORT).start();
 
 
