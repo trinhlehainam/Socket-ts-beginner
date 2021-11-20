@@ -1,5 +1,4 @@
 import {Client} from './client'
 
-() => {
-    new Client().init();
-};
+const app = new Client();
+app.init();
