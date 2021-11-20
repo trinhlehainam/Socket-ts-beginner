@@ -1,0 +1,57 @@
+@startuml
+
+class Entity {
+    pos_x: number
+    speed: number
+    pos_buffer: number[]
+    --
+    applyInput(input)
+}
+
+class LagNetwork {
+    messages: Queue<Message>
+    --
+    send(lag_ms, message)
+    recieve(): Message
+}
+
+class Client {
+    entities: Map<entity_id, Entity>
+    network: LagNetwork
+    server: Server
+
+    pos_buffers: PositionBuffer
+
+    messages_num: number
+    pending_messages: Message[]
+    --
+    constructor(status)
+    --
+    processServerMessages()
+    processInput()
+    update()
+}
+
+class PositionBuffer {
+    pos: number
+    timeStamp: Date
+}
+
+class Server {
+    clients: [[id: number]: Client]
+    entities: [[id: number]: Entity]
+    client_messages_num: [[id: number]: number]
+
+    network: LagNetwork
+    --
+    update()
+    processInput()
+    sendState()
+}
+
+Client "many" o-- "1" Server
+PositionBuffer "many" *-- "1" Client
+Entity "1.." *-right- "1" Client
+Entity "1.." *-- "1" Server
+
+@enduml

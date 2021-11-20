@@ -1,14 +1,13 @@
 import * as THREE from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
-import {Client} from './client'
+import {Message} from '../shared/message'
 
 class App {
     private scene: THREE.Scene
     private renderer: THREE.WebGLRenderer
     private camera: THREE.Camera
 
-    private player: Client
-    private client: Array<Client>
+    private entities: Array<THREE.Mesh>
 
     constructor() {
         this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
@@ -27,8 +26,16 @@ class App {
         new OrbitControls(this.camera, this.renderer.domElement);
     }
 
-    run() {
+    init() {
+        this.renderer.setAnimationLoop(this.run.bind(this));
+    }
 
+    getMessages() {
+        const messages: Array<Message> = [];
+    }
+
+    run() {
+        this.renderer.render(this.scene, this.camera);
     }
 }
 

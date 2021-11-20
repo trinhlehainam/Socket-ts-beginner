@@ -1,23 +1,35 @@
 import {io, Socket} from 'socket.io-client'
-import {Vector3, Quaternion} from 'three'
+import * as THREE from 'three'
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 
-interface Data {
-    time: Date,
-    position: Vector3,
-    rotation: Quaternion
-}
+import {Message} from "../shared/message"
 
 class Client {
     private socket: Socket
-    public data: Data
+
+    private scene: THREE.Scene
+    private renderer: THREE.WebGLRenderer
+    private camera: THREE.Camera
+
+    private entities: Array<THREE.Mesh>
+
     constructor() {
         this.socket = io();
-        
-        this.data = {
-            time: new Date(),
-            position: new Vector3(),
-            rotation: new Quaternion()
-        };
+
+        this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+        this.renderer.setClearColor(0x000000);
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(this.renderer.domElement);
+
+        this.scene = new THREE.Scene();
+
+        this.camera = new THREE.PerspectiveCamera(
+            45, window.innerWidth/ window.innerHeight,
+            0.1, 100
+        );
+
+        new OrbitControls(this.camera, this.renderer.domElement);
     }
 
     init(): Client {
@@ -29,7 +41,14 @@ class Client {
         this.socket.on('random', (number) => {
             console.log(`My number is ${number}`);
         })
+
+        this.renderer.setAnimationLoop(this.run.bind(this));
+
         return this;
+    }
+
+    run() {
+        this.renderer.render(this.scene, this.camera);
     }
 }
 
