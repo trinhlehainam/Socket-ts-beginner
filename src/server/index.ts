@@ -1,8 +1,9 @@
 import express from 'express'
 import path from 'path'
 import * as http from 'http'
-import ejs from 'ejs'
 import {Server} from 'socket.io'
+
+import {Message} from '../shared/message'
 
 const PORT = 3000;
 
@@ -10,6 +11,8 @@ class App {
     private server: http.Server
     private port: number
     private io: Server
+    private broadcast_rate: number
+
     constructor(port: number) {
         const app = express();
         app.use(express.json());
@@ -19,6 +22,7 @@ class App {
         this.server = http.createServer(app);
         this.port = port;
         this.io = new Server(this.server);
+        this.broadcast_rate = 60;
     }
 
     init(): App {
@@ -33,10 +37,6 @@ class App {
                 console.log('socket disconected :' + socket.id);
             })
         })
-
-        setInterval(() => {
-            this.io.emit('random', Math.floor(Math.random() * 10))
-        }, 1000);
 
         return this;
     }

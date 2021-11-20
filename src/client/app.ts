@@ -24,6 +24,8 @@ class App {
         );
 
         new OrbitControls(this.camera, this.renderer.domElement);
+
+        this.entities = [];
     }
 
     init() {

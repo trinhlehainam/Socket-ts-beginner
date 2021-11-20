@@ -1,5 +1,5 @@
-import {App} from './app'
+import {Client} from './client'
 
 () => {
-    new App().run();
-}
+    new Client().init();
+};
