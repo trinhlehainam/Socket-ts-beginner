@@ -53,30 +53,56 @@ class Client {
     }
 
     init(): Client {
-        this.socket.on('init', (entity_id) => {
+        this.socket.on('server_init', (entity_id) => {
             this.entity_id = entity_id;
             this.entities[this.entity_id] = this.player;
-            setInterval(this.updateMessage.bind(this), 1000/60);
+
+            const message: Message = {
+                id: this.entity_id,
+                time: new Date(),
+                position: this.player.position.clone(),
+                rotation: this.player.quaternion.clone()
+            };
+            this.socket.emit('client_init', message);
+
+            setInterval(() => {
+                const message: Message = {
+                    id: this.entity_id,
+                    time: new Date(),
+                    position: this.player.position.clone(),
+                    rotation: this.player.quaternion.clone()
+                };
+                this.socket.emit('client_update', message)
+            }, 1000/60);
+        });
+        
+        this.socket.on('other_clients', (messages) => {
+            console.log(messages);
+            if (messages.length <= 1) return;
+            for (const mess of messages) {
+                const cubeMesh = new THREE.BoxGeometry(1, 1, 1);
+                const cubeMat = new THREE.MeshBasicMaterial({color: 0xff0000});
+                const other = new THREE.Mesh(cubeMesh, cubeMat);
+                other.position.copy(mess.position);
+                other.quaternion.copy(mess.rotation);
+                this.entities[mess.id] = other;
+                this.scene.add(other);
+            }
         });
 
-        this.socket.on('join', (entity_id) => {
+        this.socket.on('newcomer', (entity_id) => {
             const cubeMesh = new THREE.BoxGeometry(1, 1, 1);
             const cubeMat = new THREE.MeshBasicMaterial({color: 0xff0000});
             const other = new THREE.Mesh(cubeMesh, cubeMat);
-            other.position.setY(0.5);
             this.entities[entity_id] = other;
-            this.scene.add(other)
-        });
-
-        this.socket.on('message', (message) => {
+            this.scene.add(other);
+        })
+        
+        this.socket.on('greeting', (message) => {
             console.log(message);
         })
 
         this.socket.on('server_update', (messages) => {
-            for (const mes of messages) {
-                this.entities[mes.id].position.copy(mes.position);
-                this.entities[mes.id].quaternion.copy(mes.rotation);
-            }
         })
 
         this.renderer.setAnimationLoop(this.loop.bind(this));
@@ -84,16 +110,6 @@ class Client {
         window.addEventListener('keydown', this.onKeyDown.bind(this));
 
         return this;
-    }
-
-    private updateMessage() {
-        const message: Message = {
-            id: this.entity_id,
-            time: new Date(),
-            position: this.player.position.clone(),
-            rotation: this.player.quaternion.clone()
-        };
-        this.socket.emit('client_update', message)
     }
 
     private loop() {
