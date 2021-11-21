@@ -16,7 +16,7 @@ class Client {
     private player: THREE.Mesh
 
     constructor() {
-        this.socket = io('http://localhost:8000');
+        this.socket = io();
 
         this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
         this.renderer.setClearColor(new THREE.Color(0x000000));

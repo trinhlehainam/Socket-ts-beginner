@@ -3,7 +3,7 @@ import path from 'path'
 import * as http from 'http'
 import {Server} from 'socket.io'
 
-const PORT = 8000;
+const PORT = 3000;
 
 class App {
     private server: http.Server
@@ -53,6 +53,9 @@ class App {
             socket.on('disconnect', () => {
                 console.log('socket disconected :' + socket.id);
             });
+
+            console.log(this.client_ids);
+            console.log(this.client_messages);
         });
 
         return this;

@@ -12,7 +12,7 @@ module.exports = merge(common, {
         hot: true,
         proxy: {
             "/socket.io": {
-                target: "http://127.0.0.1:8000",
+                target: "http://localhost:3000",
                 ws: true
             }
         }

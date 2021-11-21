@@ -26,7 +26,7 @@ const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const http = __importStar(require("http"));
 const socket_io_1 = require("socket.io");
-const PORT = 8000;
+const PORT = 8080;
 class App {
     constructor(port) {
         const app = (0, express_1.default)();
@@ -61,6 +61,8 @@ class App {
             socket.on('disconnect', () => {
                 console.log('socket disconected :' + socket.id);
             });
+            console.log(this.client_ids);
+            console.log(this.client_messages);
         });
         return this;
     }
