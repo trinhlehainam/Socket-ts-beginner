@@ -16,7 +16,7 @@ class Client {
     private player: THREE.Mesh
 
     constructor() {
-        this.socket = io('http://localhost:3000');
+        this.socket = io('http://localhost:8000');
 
         this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
         this.renderer.setClearColor(new THREE.Color(0x000000));
@@ -46,6 +46,7 @@ class Client {
         const cubeMesh = new THREE.BoxGeometry(1, 1, 1);
         const cubeMat = new THREE.MeshBasicMaterial({color: 0xff0000});
         this.player = new THREE.Mesh(cubeMesh, cubeMat);
+        this.player.position.setY(0.5);
         this.scene.add(this.player);
 
         console.log('Client init');
@@ -59,7 +60,6 @@ class Client {
 
         this.socket.on('message', (message) => {
             console.log(message);
-            document.body.innerHTML += message + "/n";
         })
 
         this.socket.emit('client_update');

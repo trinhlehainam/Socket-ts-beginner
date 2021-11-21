@@ -3,9 +3,7 @@ import path from 'path'
 import * as http from 'http'
 import {Server} from 'socket.io'
 
-import {Message} from '../shared/message'
-
-const PORT = 3000;
+const PORT = 8000;
 
 class App {
     private server: http.Server
@@ -43,7 +41,7 @@ class App {
 
     start() {
         this.server.listen(this.port, () => {
-            console.log(`Listenning on ${this.port}`);
+            console.log(`Listenning on port ${this.port}`);
         });
     }
 }
