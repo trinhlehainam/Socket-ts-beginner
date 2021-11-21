@@ -56,17 +56,44 @@ class Client {
         this.socket.on('init', (entity_id) => {
             this.entity_id = entity_id;
             this.entities[this.entity_id] = this.player;
+            setInterval(this.updateMessage.bind(this), 1000/60);
+        });
+
+        this.socket.on('join', (entity_id) => {
+            const cubeMesh = new THREE.BoxGeometry(1, 1, 1);
+            const cubeMat = new THREE.MeshBasicMaterial({color: 0xff0000});
+            const other = new THREE.Mesh(cubeMesh, cubeMat);
+            other.position.setY(0.5);
+            this.entities[entity_id] = other;
+            this.scene.add(other)
         });
 
         this.socket.on('message', (message) => {
             console.log(message);
         })
 
-        this.socket.emit('client_update');
+        this.socket.on('server_update', (messages) => {
+            for (const mes of messages) {
+                this.entities[mes.id].position.copy(mes.position);
+                this.entities[mes.id].quaternion.copy(mes.rotation);
+            }
+        })
 
         this.renderer.setAnimationLoop(this.loop.bind(this));
 
+        window.addEventListener('keydown', this.onKeyDown.bind(this));
+
         return this;
+    }
+
+    private updateMessage() {
+        const message: Message = {
+            id: this.entity_id,
+            time: new Date(),
+            position: this.player.position.clone(),
+            rotation: this.player.quaternion.clone()
+        };
+        this.socket.emit('client_update', message)
     }
 
     private loop() {
@@ -79,6 +106,23 @@ class Client {
             this.camera.updateProjectionMatrix();
         }
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    private onKeyDown(event: KeyboardEvent) {
+        switch (event.keyCode) {
+            case 37:
+                this.player.translateX(0.1);
+                break;
+            case 39:
+                this.player.translateX(-0.1);
+                break;
+            case 38:
+                this.player.translateZ(0.1);
+                break;
+            case 40:
+                this.player.translateZ(-0.1);
+                break;
+        }
     }
 }
 

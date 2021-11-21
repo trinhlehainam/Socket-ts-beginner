@@ -37,12 +37,27 @@ class App {
         this.port = port;
         this.io = new socket_io_1.Server(this.server);
         this.broadcast_rate = 60;
+        this.client_ids = [];
+        this.client_messages = [];
     }
     init() {
         this.io.on('connection', (socket) => {
             console.log(`Player ${socket.id} is connected.`);
             socket.emit('message', `Hello ${socket.id}`);
+            // Init client
+            this.client_ids.push(socket.id);
+            socket.emit('init', this.client_ids.length - 1);
+            // Recieve message from client
+            socket.on('client_update', (message) => {
+                const id = message.id;
+                this.client_messages[id] = message;
+            });
+            // Broadcast to all other about this client
+            socket.broadcast.emit('join', this.client_ids.length - 1);
             socket.broadcast.emit('message', `Say hello to ${socket.id}`);
+            setInterval(() => {
+                socket.emit('server_update', this.client_messages);
+            }, 1000 / 60);
             socket.on('disconnect', () => {
                 console.log('socket disconected :' + socket.id);
             });
