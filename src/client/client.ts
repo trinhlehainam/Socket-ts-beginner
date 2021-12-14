@@ -1,12 +1,12 @@
-import {io, Socket} from 'socket.io-client'
 import * as THREE from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
+import * as Colyseus from "colyseus.js"
 
 import {Message} from "../shared/message"
 
 class Client {
-    private socket: Socket
 
+    private client: Colyseus.Client
     private scene: THREE.Scene
     private renderer: THREE.WebGLRenderer
     private camera: THREE.Camera
@@ -16,7 +16,7 @@ class Client {
     private player: THREE.Mesh
 
     constructor() {
-        this.socket = io();
+        this.client = new Colyseus.Client("ws://localhost:3000");
 
         this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
         this.renderer.setClearColor(new THREE.Color(0x000000));
@@ -53,58 +53,10 @@ class Client {
     }
 
     init(): Client {
-        this.socket.on('server_init', (entity_id) => {
-            this.entity_id = entity_id;
-            this.entities[this.entity_id] = this.player;
-
-            const message: Message = {
-                id: this.entity_id,
-                time: new Date(),
-                position: this.player.position.clone(),
-                rotation: this.player.quaternion.clone()
-            };
-            this.socket.emit('client_init', message);
-
-            setInterval(() => {
-                const message: Message = {
-                    id: this.entity_id,
-                    time: new Date(),
-                    position: this.player.position.clone(),
-                    rotation: this.player.quaternion.clone()
-                };
-                this.socket.emit('client_update', message)
-            }, 1000/60);
+        this.client.joinOrCreate("MyRoom").then((room)=>{
+            console.log(room);
         });
         
-        this.socket.on('other_clients', (messages) => {
-            console.log(messages);
-            if (messages.length <= 1) return;
-            for (const mess of messages) {
-                const cubeMesh = new THREE.BoxGeometry(1, 1, 1);
-                const cubeMat = new THREE.MeshBasicMaterial({color: 0xff0000});
-                const other = new THREE.Mesh(cubeMesh, cubeMat);
-                other.position.copy(mess.position);
-                other.quaternion.copy(mess.rotation);
-                this.entities[mess.id] = other;
-                this.scene.add(other);
-            }
-        });
-
-        this.socket.on('newcomer', (entity_id) => {
-            const cubeMesh = new THREE.BoxGeometry(1, 1, 1);
-            const cubeMat = new THREE.MeshBasicMaterial({color: 0xff0000});
-            const other = new THREE.Mesh(cubeMesh, cubeMat);
-            this.entities[entity_id] = other;
-            this.scene.add(other);
-        })
-        
-        this.socket.on('greeting', (message) => {
-            console.log(message);
-        })
-
-        this.socket.on('server_update', (messages) => {
-        })
-
         this.renderer.setAnimationLoop(this.loop.bind(this));
 
         window.addEventListener('keydown', this.onKeyDown.bind(this));
