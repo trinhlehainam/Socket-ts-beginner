@@ -2,8 +2,6 @@ import * as THREE from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import * as Colyseus from "colyseus.js"
 
-import {Message} from "../shared/message"
-
 class Client {
 
     private client: Colyseus.Client
