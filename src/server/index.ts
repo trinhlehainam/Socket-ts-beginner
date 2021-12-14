@@ -5,6 +5,7 @@ import {Server} from "colyseus"
 import {monitor} from "@colyseus/monitor"
 
 import { MyRoom } from './Rooms/myroom'
+import { ROOM } from '../constants/rooms'
 
 const PORT = Number(process.env.PORT || 3000);
 
@@ -24,7 +25,7 @@ class App {
     }
 
     init(): App {
-        this.server.define("MyRoom", MyRoom);
+        this.server.define(ROOM.GAME_ROOM, MyRoom);
 
         return this;
     }

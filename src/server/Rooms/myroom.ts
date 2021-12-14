@@ -2,7 +2,7 @@ import { Room, Client } from "colyseus"
 
 import { GameState } from '../../states/gameState'
 import { Player } from "../../states/player";
-import { MESSAGES } from "../../messages/messages"
+import { MESSAGES } from "../../constants/messages"
 
 export class MyRoom extends Room<GameState> {
     maxClients = 4;

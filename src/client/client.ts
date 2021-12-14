@@ -2,9 +2,10 @@ import * as THREE from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import * as Colyseus from "colyseus.js"
 
-import {MESSAGES} from '../messages/messages'
 import {GameState} from '../states/gameState'
 import {Player} from '../states/player'
+import {MESSAGES} from '../constants/messages'
+import {ROOM} from '../constants/rooms'
 
 class Client {
 
@@ -14,7 +15,6 @@ class Client {
     private camera: THREE.Camera
 
     private entities: Map<string, THREE.Mesh>
-    private entity_id: string
     private player: THREE.Mesh
     private room?: Colyseus.Room<GameState>
 
@@ -44,7 +44,6 @@ class Client {
         ground.rotateX(-Math.PI/2);
         this.scene.add(ground);
 
-        this.entity_id = '';
         this.entities = new Map();
         const cubeMesh = new THREE.BoxGeometry(1, 1, 1);
         const cubeMat = new THREE.MeshBasicMaterial({color: 0xff0000});
@@ -56,7 +55,7 @@ class Client {
     }
 
     async init(): Promise<Client> {
-        const room = await this.client.joinOrCreate<GameState>('MyRoom');
+        const room = await this.client.joinOrCreate<GameState>(ROOM.GAME_ROOM);
         this.room = room;
 
         room.onMessage(MESSAGES.SERVER_INIT, (id: string) => {
@@ -184,7 +183,6 @@ class Client {
         state.rotation.w = this.player.quaternion.w;
 
         this.room!.send(MESSAGES.CLIENT_CHANGE, state);
-
     }
 }
 
