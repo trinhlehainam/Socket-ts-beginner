@@ -1,7 +1,10 @@
 import {Room, Client} from "colyseus"
 
-export class MyRoom extends Room {
+import { GameState } from '../../states/gameState'
+
+export class MyRoom extends Room<GameState> {
     onCreate (options: any) {
+      this.setState(new GameState());
         this.onMessage("type", (client, message) => {
           // handle "type" message
         });

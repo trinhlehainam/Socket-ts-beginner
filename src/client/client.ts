@@ -2,6 +2,8 @@ import * as THREE from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import * as Colyseus from "colyseus.js"
 
+import {GameState} from '../states/gameState'
+
 class Client {
 
     private client: Colyseus.Client
@@ -51,7 +53,7 @@ class Client {
     }
 
     init(): Client {
-        this.client.joinOrCreate("MyRoom").then((room)=>{
+        this.client.joinOrCreate<GameState>("MyRoom").then((room)=>{
             console.log(room);
         });
         
