@@ -3,6 +3,7 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import * as Colyseus from "colyseus.js"
 
 import {GameState} from '../states/gameState'
+import {MESSAGES} from '../messages/messages'
 
 class Client {
 
@@ -52,10 +53,9 @@ class Client {
         console.log('Client init');
     }
 
-    init(): Client {
-        this.client.joinOrCreate<GameState>("MyRoom").then((room)=>{
-            console.log(room);
-        });
+    async init(): Promise<Client> {
+        const room = await this.client.joinOrCreate<GameState>('MyRoom');
+        room.send(MESSAGES.MOVE, "Hello world");
         
         this.renderer.setAnimationLoop(this.loop.bind(this));
 
